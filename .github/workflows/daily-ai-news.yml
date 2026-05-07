@@ -1,0 +1,27 @@
+name: Daily AI News Briefing
+
+on:
+  schedule:
+    # 9:00 AM Eastern = 14:00 UTC (EST) / 13:00 UTC (EDT)
+    # This uses 13:00 UTC to hit 9 AM EDT (summer / daylight time)
+    - cron: "0 13 * * *"
+  workflow_dispatch:   # lets you trigger it manually from the GitHub UI
+
+jobs:
+  post-ai-news:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Run daily AI news script
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+          SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+        run: node daily-ai-news.mjs
